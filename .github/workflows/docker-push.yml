@@ -1,0 +1,31 @@
+name: CI to Docker Hub
+
+# The workflow will run on every push to the main branch
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Extract the source code from the repository
+      - name: Checkout code
+        [cite_start]uses: actions/checkout@v3 [cite: 18]
+
+      # Step 2: Authenticate to DockerHub using stored secrets
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # Step 3: Build the Docker image and push it to the DockerHub registry
+      - name: Build and push
+        [cite_start]uses: docker/build-push-action@v4 [cite: 18]
+        with:
+          context: .
+          push: true
+          # The image is tagged with your DockerHub username and repo name
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/final-python:latest
